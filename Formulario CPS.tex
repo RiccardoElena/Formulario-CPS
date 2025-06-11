@@ -352,13 +352,13 @@
      \(x^n\) & \(nx^{n-1}\) & \(\frac{x^{n+1}}{n+1}+c, n\neq -1\)
      \\
 
-    \(\frac{1}{x}\) & \(-x^{-2}\) & \(\ln({\lvert x\rvert}) + c\)
+    \(\frac{1}{x}\) & \(-x^{-2}\) & \(\log({\lvert x\rvert}) + c\)
     \\
 
     \(e^x\) & \(e^x\) & \(e^x+c\)
     \\
 
-    \(a^x\) & \(a^x\ln(a)\) & \(a^x\log_a(e)+c\)
+    \(a^x\) & \(a^x\log(a)\) & \(a^x\log_a(e)+c\)
     \\
 
     \(\cos(x)\) & \(-\sin(x)\) & \(\sin(x)+c\)
@@ -617,45 +617,7 @@
     \\
 \end{tblr}
 \end{figure}
-\vspace{-0.9cm}
-
-
-\begin{figure}[H]
-\begin{tblr}{
-		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-3} = {white!80!black}, colspec = {X[l, 0.2]X[l, 0.7]X[l, 1.1]}, % chktex 8 %
-	}
-    \textbf{Tipo inferenza} & \textbf{Cose note} & \textbf{Regola decisione/Stimatore} \\
-     Decisione Bayesiana
-     & \({\{H_i\}}_{i=1}^M\) disgiunte\newline\(\forall i \in \{1, \ldots,  M\}: \mathbb{P}\{H_i\}\)\newline\(\forall i \in \{1, \ldots,  M\}:\mathbb{P}\{X^n=x^n|H_i\}\)\newline\(\overline{\overline{C}} \in \mathcal{M}_{m\times m}: c_{i,j} \) costo se decido \(i\) ma è vera l'ipotesi \(H_j\)
-     & \(\mathcal{R}=\sum_{i=1}^M \sum_{j=1}^M C_{i,j}\mathbb{P}\left\{D\left(X^n\right)=i, H = H_j\right\}\)
-     \(D(x^n)=i \iff \mathbb{P}\{X^n=x^n,H_i\}> \mathbb{P}\{X^n=x^n,H_j\} \forall j \neq i\)\newline\(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_2\}} \underset{H_2}{\overset{H_1}{\gtrless}} \frac{\mathbb{P}\{H_2\}}{\mathbb{P}\{H_1\}}\) con 2 ipotesi
-     \\
-
-     Decisione non Bayesiana (Neyman-Pearson)
-     & {\(H_0\) stato normale, \(H_1 = \overline{H_0}\) stato alterato\newline\(\forall i \in \{0,1\}:\mathbb{P}\{X^n=x^n|H_i\}\)\\
-     Errore di tipo I:\@ \(P\left\{D\left(X^n\right)=1|H_0\right\} \) \\
-     Potenza del test:\@ \(P\left\{D\left(X^n\right)=1|H_1\right\} \)
-     }
-     & \(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_0\}} \underset{H_0}{\overset{H_1}{\gtrless}} \eta\)\newline\(\alpha = \mathbb{P}\{L(x^n) > \eta | H_0\}\)\newline\(1-\beta = \mathbb{P}\{L(x^n) > \eta | H_1\}\)
-     \\
-
-     Stima Bayesiana parametro continuo
-     & {\(f_{\Theta|X^n}(\theta|x^n) = \frac{f_\Theta(\theta)p_{X^n|\Theta}(x^n|\theta)}{p_{X^n}(x^n)}\)\newline \(p_{X^n}(x^n) = \int f_{\Theta}(\theta)p_{X^n|\Theta}(x^n|\theta)d\theta\)\\
-     \(\mathcal{R}=E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\right]=E_{x^n}\left[E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\middle|X^n\right]\right]\)
-     } 
-     & \(\hat{\theta}_{opt}(x^n) = \arg\min\int C(\hat{\theta}(x^n)-\theta)f_{\Theta|X^n}(\theta|x^n)d\theta\)\newline\(C(x) = x^2 \Rightarrow \hat{\theta}_{mmse}(x^n) = \int \theta f_{\Theta|X^n}(\theta|x^n)d\theta=\mathbb{E}[\Theta|X^n = x^n]\)\newline\(C(x) = \Pi(\frac{x}{\epsilon}) = \begin{cases}
-         1, &|x|<\frac{\epsilon}{2}\\
-         0, & else
-     \end{cases} \Rightarrow \hat{\theta}_{map}(x^n)=\arg\max f_{\Theta|X^n}(\theta|x^n)\)
-     \\
-
-     Stima non Bayesiana
-     & \(f_{X^n}(x^n;\theta)\)
-     & \(\hat{\theta}_{ML}(x^n) = \arg\max \log\left(f_{X^n}(x^n;\theta)\right)\)
-     \\
-\end{tblr}
-\end{figure}
-\textbf{NOTA:} APPLICARE IL LOGARITMO NATURALE NON CAMBIA IL VERSO DELLA DISEQUAZIONE, FORTEMENTE CONSIGLIATI IN TUTTI GLI STIMATORI.\@
+\vspace{-0.5cm}
 \begin{figure}[H]
 \begin{tblr}{
 		hlines = {0.9pt}, vlines = {0.9pt}, colspec = {X[l,0.4]X[l]},
@@ -686,21 +648,46 @@
 \end{tblr}
 \end{figure}
 
-\textbf{NOTA:} Se in uno stimatore vale che:
-\begin{itemize}
-    \item \(C(\cdot)\geq 0\)  e convessa (\(\cup\))
-    \item \(f_{\Theta|X^n}(\theta|x^n)\) è simmetrica rispetto a \(\E[\Theta|X^n = x^n]\)
-    \item \(f_{X^n}(x^n;\theta)\) è unimodale
-\end{itemize}
-
+\textbf{NOTA:} Se in uno stimatore vale che \(C(\cdot)\geq 0\)  e convessa (\(\cup\)), \(f_{\Theta|X^n}(\theta|x^n)\) è simmetrica rispetto a \(\E[\Theta|X^n = x^n]\) e\(f_{X^n}(x^n;\theta)\) è unimodale,
 Allora tutti gli stimatori che ottimizzano \(C(\cdot)\) coincidono con \(\E[\Theta|X^n]\) e, quindi equivalenti a \(\hat{\Theta}_{mmse}(X^n) = \hat{\Theta}_{map}(X^n)\).
+\textbf{NOTA:} APPLICARE IL LOGARITMO NATURALE NON CAMBIA IL VERSO DELLA DISEQUAZIONE, FORTEMENTE CONSIGLIATI IN TUTTI GLI STIMATORI.\@
+\vspace{-0.9cm}
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-3} = {white!80!black}, colspec = {X[l, 0.2]X[l, 0.7]X[l, 1.1]}, % chktex 8 %
+	}
+    \textbf{Tipo inf} & \textbf{Cose note} & \textbf{Regola decisione/Stimatore} \\
+     Decisione Bayesiana
+     & \({\{H_i\}}_{i=1}^M\) disgiunte\newline\(\forall i \in \{1, \ldots,  M\}: \mathbb{P}\{H_i\}\)\newline\(\forall i \in \{1, \ldots,  M\}:\mathbb{P}\{X^n=x^n|H_i\}\)\newline\(\overline{\overline{C}} \in \mathcal{M}_{m\times m}: c_{i,j} \) costo se decido \(i\) ma è vera l'ipotesi \(H_j\)
+     & \(\mathcal{R}=\sum_{i=1}^M \sum_{j=1}^M C_{i,j}\mathbb{P}\left\{D\left(X^n\right)=i, H = H_j\right\}\)
+     \(D(x^n)=i \iff \mathbb{P}\{X^n=x^n,H_i\}> \mathbb{P}\{X^n=x^n,H_j\} \forall j \neq i\)\newline\(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_2\}} \underset{H_2}{\overset{H_1}{\gtrless}} \frac{\mathbb{P}\{H_2\}}{\mathbb{P}\{H_1\}}\) con 2 ipotesi
+     \\
 
-\textbf{NOTA:}
-\begin{itemize}
-    \item Convessa = \(\cup\)
-    \item Concava = \(\cap\)
-\end{itemize}
+     Neyman-Pearson
+     & {\(H_0\) stato normale, \(H_1 = \overline{H_0}\) stato alterato\newline\(\forall i \in \{0,1\}:\mathbb{P}\{X^n=x^n|H_i\}\)\\
+     Errore di tipo I:\@ \(P\left\{D\left(X^n\right)=1|H_0\right\} \) \\
+     Potenza del test:\@ \(P\left\{D\left(X^n\right)=1|H_1\right\} \)
+     }
+     & \(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_0\}} \underset{H_0}{\overset{H_1}{\gtrless}} \eta\)\newline\(\alpha = \mathbb{P}\{L(x^n) > \eta | H_0\}\)\newline\(1-\beta = \mathbb{P}\{L(x^n) > \eta | H_1\}\)
+     \\
 
+     Stima Bayesiana parametro continuo
+     & {\(f_{\Theta|X^n}(\theta|x^n) = \frac{f_\Theta(\theta)p_{X^n|\Theta}(x^n|\theta)}{p_{X^n}(x^n)}\)\newline \(p_{X^n}(x^n) = \int f_{\Theta}(\theta)p_{X^n|\Theta}(x^n|\theta)d\theta\)\\
+     \(\mathcal{R}=E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\right]=E_{x^n}\left[E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\middle|X^n\right]\right]\)
+     } 
+     & \(\hat{\theta}_{opt}(x^n) = \arg\min\int C(\hat{\theta}(x^n)-\theta)f_{\Theta|X^n}(\theta|x^n)d\theta\)\newline\(C(x) = x^2 \Rightarrow \hat{\theta}_{mmse}(x^n) = \int \theta f_{\Theta|X^n}(\theta|x^n)d\theta=\mathbb{E}[\Theta|X^n = x^n]\)\newline\(C(x) = \Pi(\frac{x}{\epsilon}) = \begin{cases}
+         1, &|x|<\frac{\epsilon}{2}\\
+         0, & else
+     \end{cases} \Rightarrow \hat{\theta}_{map}(x^n)=\arg\max f_{\Theta|X^n}(\theta|x^n)\)
+     \\
+
+     Non Bayes
+     & \(f_{X^n}(x^n;\theta)\)
+     & \(\hat{\theta}_{ML}(x^n) = \arg\max \log\left(f_{X^n}(x^n;\theta)\right)\)
+     \\
+\end{tblr}
+\end{figure}
+\vspace{-0.9cm}
 \begin{figure}[H]
     \begin{tblr}{
 		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-4} = {white!80!black}, colspec = {X[l, 0.25]X[l, 0.37]X[l, 0.6]X[l, 0.15]}, % chktex 8 %
@@ -709,7 +696,7 @@ Allora tutti gli stimatori che ottimizzano \(C(\cdot)\) coincidono con \(\E[\The
         \\
 
         {Uniforme discreta\hspace{0.5cm}\(\mathcal{X} = \left\{1,\dots, m\right\} \)}
-        & \(H = \ln\left(\lvert\mathcal{X}\rvert\right) = \ln\left(m\right)\)
+        & \(H = \log\left(\lvert\mathcal{X}\rvert\right) = \log\left(m\right)\)
         & {Stimare il parametro \(m\implies\)\\
             \(\hat{m}= \max\{x_1,\dots,x_n\}\)}
         &
@@ -725,72 +712,88 @@ Allora tutti gli stimatori che ottimizzano \(C(\cdot)\) coincidono con \(\E[\The
         \\
 
         {Bernoulli\hspace{0.5cm}\(\mathcal{X} = \{0,1\}\)}
-        & \(H = -\log(1-p) + p\log\left(\frac{1-p}{p}\right)\)
+        & \(H = H(p)\)
         & {Stimare il parametro \(p\implies\)\\
-            \(\Lambda\left(p\right)=\log\left(p\right)\sum_{i=1}^n x_i + \log\left(1-p\right)\sum_{i=1}^n\left(1-x_i\right)\) 
+            \(\Lambda\left(p\right)=\log\left(p\right)w(n) + \log\left(1-p\right)(n-w(n))\)\\
+            \(\frac{d}{dp} \Lambda\left(p\right) = \frac{w(n)}{p} - \frac{n-w(n)}{1-p}= 0\)
             }
-        & \(I_n=\frac{1}{p\left(1-p\right)}\)
+        & {\(I=\frac{1}{p\left(1-p\right)}\)\\
+        \(I_n=\frac{n}{p\left(1-p\right)}\)}
         \\
 
-        {Binomiale\hspace{0.5cm}\(X \sim \mathcal{B}(n,p)\)\hspace{0.5cm}\(\mathcal{X} = \{0,1,\dots,n\}\)}
+        {Binomiale\hspace{0.5cm}\(X \sim \mathcal{B}(m,p)\)\hspace{0.5cm}\(\mathcal{X} = \{0,1,\dots,m\}\)}
         &
         & {Stimare il parametro \(p\implies\)
-            \(\Lambda(p)=\sum_{i=1}^m\log\binom{n}{x_i}+\log(p)\sum_{i=1}^m x_i+\log(1-p)\sum_{i=1}^m(n-x_i)\)}
-        & \(I_n=\frac{n}{p\left(1-p\right)}\)
+            \(\Lambda(p)=\overset{n}{\underset{i=1}{\sum}}\log\binom{m}{x_i}+\log(p)\overset{n}{\underset{i=1}{\sum}} x_i+\log(1-p)\overset{n}{\underset{i=1}{\sum}} (m-x_i)\)\\
+            \(\frac{d}{dp} \Lambda\left(p\right) = \frac{\overset{n}{\underset{i=1}{\sum}} x_i}{p} - \frac{\overset{n}{\underset{i=1}{\sum}} (m-x_i)}{1-p}= 0\)}
+        & {\(I=\frac{m}{p\left(1-p\right)}\)\\
+        \(I_n=\frac{nm}{p\left(1-p\right)}\)}
         \\
 
         {Geometrica\hspace{0.5cm}\(X \sim \mathcal{G}(p)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}\)}
         & \(H=-\log\left(p\right)-\frac{1-p}{p}\log\left(1-p\right)\)
-        & Stimare il parametro \(p\implies\)
-            \(\Lambda(p)=n\log\left(p\right)+\log\left(1-p\right)\sum_{i=1}^n\left(x_i-1\right)\)
-        & \(I_n=\frac{1}{p^2\left(1-p\right)}\)
+        & {Stimare il parametro \(p\implies\)
+            \(\Lambda(p)=n\log\left(p\right)+\log\left(1-p\right)\sum_{i=1}^n\left(x_i-1\right)\)\\
+            \(\frac{d}{dp} \Lambda\left(p\right) =  \frac{n}{p}-\frac{\overset{n}{\underset{i=1}{\sum}} (x_i-1)}{1-p}= 0\)}
+        & {\(I=\frac{1}{p^2\left(1-p\right)}\)\\
+        \(I_n=\frac{n}{p^2\left(1-p\right)}\)}
         \\
 
         {Poisson\hspace{0.5cm}\(X \sim \mathcal{P}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}_0\)}
         & 
-        & Stimare il parametro \(\lambda\implies\)
-            \(\Lambda(\lambda) =\ln(\lambda)\sum_{i=1}^n x_i-n\lambda-\sum_{i=1}^n\ln(x_i!)\)
-        & \(I_n=\frac{1}{\lambda}\)
+        & {Stimare il parametro \(\lambda\implies\)
+            \(\Lambda(\lambda) =\log(\lambda)\sum_{i=1}^n x_i-n\lambda-\sum_{i=1}^n\log(x_i!)\)\\
+            \(\frac{d}{d\lambda} \Lambda\left(\lambda\right) =  \frac{\overset{n}{\underset{i=1}{\sum}} x_i}{\lambda} -n= 0\)}
+        & {\(I=\frac{1}{\lambda}\)\\
+        \(I_n=\frac{n}{\lambda}\)}
         \\
 
         {Esponenziale\hspace{0.5cm}\(X \sim \mathcal{E}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}^+_0\) } 
-        & \(H=1-\ln\left(\lambda\right)\)
-        & Stimare il parametro \(\lambda\implies\)
-            \(\Lambda(\lambda) =n\ln(\lambda)-\lambda\sum_{i=1}^n x_i\)
-        & \(I_n=\frac{1}{\lambda^2}\)
+        & \(H=1-\log\left(\lambda\right)\)
+        & {Stimare il parametro \(\lambda\implies\)
+            \(\Lambda(\lambda) =n\log(\lambda)-\lambda\sum_{i=1}^n x_i\)\\
+            \(\frac{d}{d\lambda} \Lambda\left(\lambda\right) =  \frac{n}{\lambda}-\sum_{i=1}^n x_i= 0\)}
+        & {\(I=\frac{1}{\lambda^2}\)\\
+        \(I_n=\frac{n}{\lambda^2}\)}
         \\
 
         {Laplaciana\hspace{0.5cm}\(X \sim \mathcal{L}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
-        & \(H=1+\ln\left(\frac{2}{\lambda}\right)\)
+        & \(H=1+\log\left(\frac{2}{\lambda}\right)\)
         & Stimare il parametro \(\lambda\implies\) 
-            \(\Lambda(\lambda)=n\ln(\lambda)-n\ln(2)-\lambda\sum_{i=1}^n\lvert x_i\rvert\)
-        & \(I_n=\frac{1}{\lambda^2}\)
+            \(\Lambda(\lambda)=n\log(\frac{\lambda}{2})-\lambda\overset{n}{\underset{i=1}{\sum}} \lvert x_i \rvert\)
+        & {\(I=\frac{1}{\lambda^2}\)\\
+        \(I_n=\frac{n}{\lambda^2}\)}
         \\
 
         {Cauchy\hspace{0.3cm}\(X \sim \mathcal{C}\left(a,b\right)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
         & \(H=\log\left(4\pi b\right)\)
         & {Stimare i parametri \(a\) e \(b\implies\)\\
-            \(\Lambda(a; b) =-n\log(b\pi)-\sum_{i=1}^{n}\log\left(1+{\left(\frac{x_i-a}{b}\right)}^2\right)\)}
+            \(\Lambda(a; b) =-n\log(b\pi)-\sum_{i=1}^{n}\log\left(1+{\left(\frac{x_i-a}{b}\right)}^2\right)\)\\
+            NO!}
         & \(I_n=\frac{1}{2b^2}\)
         \\
 
         {Rayleigh\hspace{0.3cm}\(X\sim\mathcal{R\left(\beta\right)}\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}_0^+\)}
-        & {\(H= 1+\ln\left(\frac{\beta}{\sqrt{2}}\right)+\frac{\gamma}{2}\)\\
+        & {\(H= 1+\log\left(\frac{\beta}{\sqrt{2}}\right)+\frac{\gamma}{2}\)\\
             \(\gamma\approx0.5772\dots\)
         }
-        & Stimare il parametro \(\beta\implies\)
-            \(\Lambda(\beta)=-2n\ln(\beta)+\sum_{i=1}^n\ln(x_i)-\frac{1}{2\beta^2}\sum_{i=1}^n x_i^2\)
-        & \(I_n=\frac{2}{\beta^2}\)
+        & {Stimare il parametro \(\beta\implies\)
+            \(\Lambda(\beta)=-2n\log(\beta)+\sum_{i=1}^n\log(x_i)-\frac{1}{2\beta^2}\sum_{i=1}^n x_i^2\)\\
+            \(\frac{d}{d\beta} \Lambda\left(\beta\right) =  -\frac{2n}{\beta}+\frac{1}{\beta^3}\sum_{i=1}^n x_i^2= 0\)}
+        & {\(I=\frac{4}{\beta^2}\)\\
+        \(I_n=\frac{4n}{\beta^2}\)}
         \\
 
         {Gaussiana\hspace{0.5cm}\(X \sim \mathcal{N}(\mu_X, \sigma_X^2)\)}
-        & \(H=\frac{1}{2}\left(1 +\ln\left(2\sigma^2_X\pi\right)\right)\)
+        & \(H=\frac{1}{2}\left(1 +\log\left(2\sigma^2_X\pi\right)\right)\)
         & {Stimare i parametri \(\mu_X\) e \(\sigma_X^2\implies\)
-        \(\Lambda(\mu_X;\sigma_X^2)=-\frac{n}{2}\ln\left(2\pi\sigma_X^2\right)-\frac{1}{2\sigma_X^2}\sum_{i=1}^n{\left(x_i - \mu_X\right)}^2\)
-        }
-        & {\(I^{\mu_X}_n=\frac{1}{\sigma_X^2}\)\\
-        \(I^{\sigma_X^2}_n=\frac{1}{2\sigma_X^2}\)
-        }
+        \(\Lambda(\mu_X;\sigma_X^2)=-\frac{n}{2}\log\left(2\pi\sigma_X^2\right)-\frac{1}{2\sigma_X^2}\sum_{i=1}^n{\left(x_i - \mu_X\right)}^2\)\\
+        \(\frac{d}{d\mu_X} \Lambda(\mu_X;\sigma_X^2)= -\frac{1}{\sigma_X^2}\overset{n}{\underset{i=1}{\sum}} {\mu_X -x_i}\)\\
+        \(\frac{d}{d\sigma_X^2} \Lambda(\mu_X;\sigma_X^2) = -\frac{n}{2\sigma_X^2}+\frac{1}{2\sigma_X^4}\overset{n}{\underset{i=1}{\sum}} {\left(x_i - \mu_X\right)}^2\)}
+        & {\(I^{\mu_X}=\frac{1}{\sigma_X^2}\)\\
+        \(I^{\mu_X}_n=\frac{n}{\sigma_X^2}\)\\
+        \(I^{\sigma_X^2}=\frac{1}{2\sigma_X^4}\)\\
+        \(I^{\sigma_X^2}_n=\frac{n}{2\sigma_X^4}\)}
         \\
     \end{tblr}
 \end{figure}
