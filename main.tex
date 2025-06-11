@@ -1,0 +1,798 @@
+\documentclass[a4paper,10pt]{article}
+
+% Pacchetti necessari
+\usepackage[italian]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{mathtools}
+\usepackage{geometry}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{sub caption}         % Per posizionare grafici affiancati
+\usepackage{hyperref}
+\usepackage{tabularray} % per le tabelle
+\usepackage{float} % per posizionare le figure
+\usepackage{comment} % per commentare
+\usepackage{pgfplots}           % Pacchetto principale per i grafici
+\usepackage{tikz}               % Base per pgfplots
+
+
+% Impostazione dei margini della pagina
+\geometry{a4paper, margin=0.5cm}
+
+% Definizione di ambienti personalizzati
+\tcbset{
+    distribuzioneDiscreta/.style={
+        colback=white,
+        colframe=black,
+        fonttitle=\bfseries,
+        title=#1
+    },
+    distribuzioneContinua/.style={
+        colback=white,
+        colframe=gray,
+        fonttitle=\bfseries,
+        title=#1
+    },
+    funzioni/.style={
+        colback=white,
+        colframe=black,
+        fonttitle=\bfseries,
+        title=#1
+    }
+}
+
+% Configurazione di pgfplots
+\pgfplotsset{
+    compat=newest,              % Usa la versione più recente
+    width=10cm,                 % Larghezza predefinita dei grafici
+    height=8cm,                 % Altezza predefinita dei grafici
+    grid=both,                  % Mostra griglia sia per x che per y
+    grid style={line width=0.1pt, draw=gray!20},  % Stile della griglia
+    axis lines=middle,          % Stile degli assi (centrati)
+    xlabel=\(x\),                 % Etichetta asse x
+    ylabel=\(y\),                 % Etichetta asse y
+    axis line style={->},       % Stile frecce sugli assi
+    samples=200,                % Numero di punti per calcolare la funzione
+}
+
+% Qui puoi definire colori personalizzati
+\definecolor{funcolor}{RGB}{0, 100, 200}  % Blu per la funzione principale
+
+
+% Definizione dei comandi per le formule matematiche
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Var}{\operatorname{Var}}
+\newcommand{\Prob}{\mathbb{P}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+
+\def\funzioneA{exp(-x)}  % chktex 36 % <- MODIFICA QUESTA RIGA PER CAMBIARE PRIMA FUNZIONE
+\def\cdfA{1-exp(-x)} % chktex 36 %
+\def\funzioneB{exp(-2*abs(x))} % chktex 36    % <- MODIFICA QUESTA RIGA PER CAMBIARE SECONDA FUNZIONE
+\def\cdfBN{1/2*exp(2*x)}% chktex 36 %
+\def\cdfBP{1-(1/2)*exp(-2*x)}% chktex 36 %
+\def\funzioneC{(1/pi)*1/(1+x^2)}% chktex 36 %
+\def\cdfC{(1/2)+(1/pi)*rad(atan(x))}% chktex 36 %
+\def\funzioneG{1/(sqrt(2*pi))*exp(-x^2/2)}% chktex 36 %
+\def\cdfG{1/(1 + exp(-0.07056*(x)^3 - 1.5976*x))}% chktex 36 % chktex 8 %
+\def\Q{1-1/(1 + exp(-0.07056*(x)^3 - 1.5976*x))}% chktex 36 % chktex 8 %
+
+
+\begin{document}
+\vspace{1cm}
+
+
+% TODO REMOVE COMMENT ENV
+
+
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, colspec = {X[l,0.4]X[l]},
+        cell{1-15}{1} = {white!80!black} % chktex 8 %
+	}
+	\textbf{Probabilità totale in una PMF} 
+    & \(p_X\left(x\right) = \sum_{m = 1}^{|M|} \mathbb{P}(E_m) p_{X|E_m}(x)\), \(\bigcup_{i=1}^m E_i = \Omega \land (E_i \cap E_j = \emptyset, \forall i \neq j \in \left\{1,..,m\right\})  \)
+    \\
+    
+    \textbf{Probabilità Condizionata}
+    & \(p_X(x)p_{Y|X}(y|x)=p_{X,Y}(x,y)=p_Y(y)p_{X|Y}(x|y)\) cond \textit{fisso} \(\Rightarrow p_{X|Y}(x|y)\) è \textit{legge di prob}
+    \\
+    
+    \textbf{Probabilità var indipendenti}
+    & \(p_{Y|X}(y|x)=p_Y(y)\) \qquad\quad \(p_{X|Y}(x|y)=p_X(x)\) 
+    \\
+
+    \textbf{Regola della Catena}
+    & \(p_{X,Y,Z}(x,y,z)=p_X(x)p_{Y|X}(y|x)p_{Z|X,Y}(z|x,y)\)
+    \\
+
+    \textbf{Linearità della Media}
+    & \(\mathbb{E}[aX+bY]=a\mathbb{E}[X]+b\mathbb{E}[Y]\)
+    \\
+
+    \textbf{Media Condizionata 1 var}
+    & \(\mathbb{E}\left[X\right]=\sum_{m = 1}^{|M|}\mathbb{P}(E_m)\sum_{x\in \mathcal{X}}xp_{X|E_m}(x|E_m)=\sum_{m = 1}^{|M|}\mathbb{P}(E_m)\mathbb{E}\left[X|E_m\right]\)
+    \\
+
+    \textbf{Media Condizionata 2 var}
+    & \(\mathbb{E}[g(X,Y)] = \sum_{y\in\mathcal{Y}} p_Y(y)\sum_{x\in\mathcal{X}}g(x,y)p_{X|Y}(X|Y) = \sum_{y\in\mathcal{Y}} \mathbb{E}[g(X,Y)|Y]p_Y(y)= \mathbb{E} [\mathbb{E}[g(X,Y)|Y]]\)
+    \\
+
+    \textbf{Media di funzioni}
+    & \(\mathbb{E}\left[g(x)\right] = \sum_{x\in \mathcal{X}} g(x)p_X(x)\)
+    \\
+
+    \textbf{Quantità importanti 1 var} 
+    & \(X^2_{rms} = \mathbb{E}\left[X^2\right] = \sum_{x\in \mathcal{X}} x^2p_X(x)\)   \qquad \(\sigma^2_X = \mathbb{E}\left[{(X-\mu_X)}^2\right] = X^2_{rms} - \mu^2_X\)
+    \\
+
+    \textbf{Quantità importanti 2 var}
+    & {\(R_{X,Y} = \mathbb{E}[XY]\)\qquad \(COV[X,Y] = \mathbb{E}[(X-\mu_X)(Y-\mu_Y)]=R_{X,Y}-\mu_X\mu_Y\)
+    \(COV(X,Y)=\rho_{X,Y}\sigma_X\sigma_Y, \rho \in [-1,1]\)\qquad \(p_{X,Y}(x,y)=p_X(x)p_Y(y)\Rightarrow COV(X,Y)=0 \)}
+    \\
+
+    \textbf{Combinazione lineare 2 var}
+    & \(Z=aX+bY+c,\, \sigma_Z^2 = a^2\sigma^2_X + b^2\sigma_Y^2+2abCOV(X,Y)\)
+    \\
+
+    \textbf{Disuguaglianza di Chebyshev}
+    & \(X>0,\, \mathbb{P}\left\{|X-\mu_X| \leq k\sigma_X\right\} \geq 1- \frac{1}{k^2}\)
+    \\
+
+    \textbf{PMF Congiunta \(\Rightarrow\) marginali}
+    & dato \(p_{X,Y}(x,y)\), \(\,p_X(x) = \sum_{y\in \mathcal{Y}}p_{X,Y}(x,y)\)
+    \\
+
+    \textbf{Funzione gen Momenti \(\mathbf{M_X(s)}\)}
+    & \(M_X(s) = \mathbb{E}[e^{sX}]\) \qquad \(M_X(0) = 1\) \qquad \(\frac{d^r}{d s^r} M_X(s)\rvert_{s=0} = \mathbb{E}[X^r]\) \qquad \(Z=aX+bY,\,M_Z(s)=M_X^a(s)M_Y^b(s)\)
+    \\
+    
+    \textbf{Proprietà prob condizionata}
+    & dati \(X\), \(Y\) staticamente indipendenti e \(Z = X + Y\), \(p_{Z|X}\left(z|x\right) = p_{Y}\left(z-x\right)\)
+    \\
+\end{tblr}
+\end{figure}
+\vspace{-0.9cm}
+% TABELLA VARIABILI ALEATORIE DISCRETE
+\begin{figure}[H]
+    \begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-4} = {white!80!black}, colspec = {X[l, 1]X[l, 0.6]X[l, 0.6]X[l, 0.8]},% chktex 8 %
+	}
+        \textbf{Nome} & \textbf{PMF} &\textbf{\(\mathbf{\mu}\)\hspace{0.5cm}\(\mathbf{\sigma^2}\)} & \textbf{Proprietà}\\
+        % Uniforme discreta
+        {Uniforme discreta\hspace{0.5cm}\(\mathcal{X} = \left\{1,\dots, N\right\} \)}
+        & \(p(k) = \frac{1}{N}\) 
+        & \(\mu = \frac{N+1}{2}\hspace{0.5cm}\sigma^2 =\frac{N^2-1}{12}\)
+        & 
+        \\
+        {Bernoulli\hspace{0.5cm}\(\mathcal{X} = \{0,1\}\)}
+        & \(p(k) = \begin{cases} 
+            1-p, & k = 0 \\ 
+            p, & k = 1 
+          \end{cases}\) 
+        & \(\mu = p\hspace{0.5cm}\sigma^2 = p(1-p)\)
+        &
+        \\
+        {Binomiale\hspace{0.5cm}\(X \sim \mathcal{B}(n,p)\)\hspace{0.5cm}\(\mathcal{X} = \{0,1,\dots,n\}\)}
+        & \(p(k) = \binom{n}{k} {(1-p)}^{n-k}p^k\) 
+        & \(\mu = np\hspace{0.5cm}\sigma^2 = np(1-p)\)
+        &
+        \\
+        {Geometrica\hspace{0.5cm}\(X \sim \mathcal{G}(p)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}\)}
+        & \(p(k) = {(1-p)}^{k-1}p\) 
+        & \(\mu = \frac{1}{p}\hspace{0.5cm}\sigma^2 = \frac{1-p}{p^2}\)
+        &
+        \\
+        {Poisson\hspace{0.5cm}\(X \sim \mathcal{P}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}_0\)}
+        & {\(p(k) = \frac{\lambda^k e^{-\lambda}}{k!}\)\hspace{0.5cm}\(\lambda > 0\rparen\)} 
+        & {\(\mu = \lambda\)\hspace{0.5cm}\(\sigma^2 = \lambda\)}
+        & {\(X_1 \sim  P(\lambda_1), X_2 \sim  P(\lambda_2)\)\hspace{0.5cm}\(Y = aX_1 +bX_2 \sim P(a\lambda_1 +  b\lambda_2)\)}
+        \\
+    \end{tblr}
+\end{figure}
+\vspace{-0.9cm}
+% TABELLA VARIABILI ALEATORIE DISCRETE
+\begin{figure}[H]
+    \begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-4} = {white!80!black}, colspec = {X[l, 0.8]X[l, 0.7]X[l, 0.5]X[l, 0.8]}, % chktex 8 %
+	}
+        \textbf{Nome} & \textbf{PDF} &\textbf{\(\mathbf{\mu}\)\hspace{0.5cm}\(\mathbf{\sigma^2}\)} & \textbf{CDF}   \\
+
+        {Uniforme continua\hspace{0.5cm}\(X \sim \mathcal{U}(a,b)\)\hspace{0.5cm}\(\mathcal{X} = \left[a,b\right] \)}
+        & \((x) = 
+            \begin{cases} 
+                \frac{1}{b-a}, & x \in [a,b] \\ 
+                0, & \text{else} 
+            \end{cases}
+          \) 
+        & \(\mu = \frac{a+b}{2}\hspace{0.5cm}\sigma^2 =\frac{{(b-a)}^2}{12}\)
+        & \(F(x) = 
+            \begin{cases}
+                0, & x < a\\
+                \frac{x-a}{b-a}, &a\leq x \leq b\\
+                1, & x \geq b
+            \end{cases}
+          \)
+        \\
+        {Esponenziale\hspace{0.5cm}\(X \sim \mathcal{E}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}^+_0\) } 
+        & {\(f(x) = \lambda e^{-\lambda x} u(x)\)\hspace{0.5cm}\(\lambda > 0\)}  
+        & {\(\mu = \frac{1}{\lambda}\hspace{0.5cm}\sigma^2 = \frac{1}{\lambda^2}\)} 
+        & \(F(x) = (1-e^{-\lambda x})u(x)\)
+        \\
+        {Laplaciana\hspace{0.5cm}\(X \sim \mathcal{L}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
+        & {\(f(x) = \frac{\lambda}{2} e^{-\lambda|x|}\)\hspace{0.5cm}\(\lambda > 0\)}
+        & {\(\mu = 0\)\hspace{0.5cm}\(\sigma^2 =\frac{2}{\lambda^2}\)}
+        & \(F(x) = \begin{cases}
+            \frac{1}{2}e^{\lambda x}, & x\leq 0\\
+            1 - \frac{1}{2}e^{-\lambda x}, & x\geq 0\\
+        \end{cases}\)
+        \\
+        {Cauchy\hspace{0.5cm}\(X \sim \mathcal{C}(a,b)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
+        & \(f(x) =  \frac{1}{\pi b}\frac{1}{1 + {\left(\frac{x-a}{b}\right)}^2}\) 
+        & {\(\mu = \) non definita\hspace{0.5cm}\(\sigma^2\) = non definita\hspace{0.5cm}\(Sym_{\left[-H, H\right]} = a\)}
+        & \(F(x) = \frac{1}{2} + \frac{1}{\pi}\arctan{\left(\frac{x-a}{b}\right)}\)
+        \\
+        {Rayleigh\hspace{0.5cm}\(X\sim\mathcal{R\left(\beta\right)}\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}_0^+\)}
+        & \(f\left(x\right)=\frac{x}{\beta^2}e^{-\frac{x^2}{2\beta^2}} u\left(x\right)\quad\beta>0\)
+        & {\(\mu = \beta\sqrt{\frac{\pi}{2}}\)\\
+        \(\sigma^2=\frac{4-\pi}{2}\beta^2\)\\
+        }
+        & \(F\left(x\right) = 1-e^{-\frac{x^2}{2\beta^2}}\)
+    \end{tblr}
+\end{figure}
+\vspace{-0.816cm}
+\begin{figure}[H]
+    \begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-5} = {white!80!black}, % chktex 8 %
+        colspec = {X[l, 0.40]X[l, 0.62]X[l, 0.19]X[l, 0.43]X[l,1.02]},
+	}
+        \textbf{Nome} & \textbf{PDF} &\textbf{\(\mathbf{\mu}\)\hspace{0.5cm}\(\mathbf{\sigma^2}\)} & \textbf{CDF}  & \textbf{Proprietà}  \\
+    
+        {Gaussiana\hspace{0.5cm}\(X_0 \sim \mathcal{N}(0, 1)\)\hspace{0.5cm}\(X \sim \mathcal{N}(\mu_X, \sigma_X^2)\)}
+        & \(f_X(x) = \frac{1}{\sqrt{2\pi \sigma^2_X}}e^{-\frac{{\left(x-\mu_X\right)}^2}{2\sigma^2_X}}\)
+        & {\(\mu = \mu\)\hspace{0.5cm}\(\sigma^2  = \sigma^2\)}
+        & {\(F_X(x) = 1 - Q(x)\)\hspace{0.5cm}\(Q(x) = \mathbb{P}(X_0 \geq x)\)}
+        & {\(X \sim \mathcal{N}(\mu_X, \sigma_X^2)\Rightarrow X = \sigma_X X_0+\mu_X\)\\\(X \sim \mathcal{N}(\mu_X, \sigma_X^2)\Rightarrow \mathbb{P}(X \geq x) =  Q\left(\frac{x-\mu_x}{\sigma_x}\right)\)\\\(Q(-x) = 1-Q(x)\)\\\(\rho_{1,2} = 0\leftrightarrow f_{X_1, X_2}(x_1, x_2) = f_{X_1}(x_1)f_{X_2}(x_2)\)\\ marginali \(\iff\) congiunta}
+        \\
+    \end{tblr}
+\end{figure}
+\vspace{-0.9cm}
+\begin{figure}[H]
+    \begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-3} = {white!80!black}, colspec = {X[l, 1]X[l, 0.7]X[l, 0.5]},% chktex 8 %
+	}
+        \textbf{\(Y = g(X), g \) continua e iniettiva (invertibile)} & \textbf{PDF} & \textbf{CDF}\\
+        
+        crescente 
+        &  \(f_Y(y) = \frac{f_x\left(g^{-1}\left(y\right)\right)}{|g'\left(g^{-1}\left(y\right)\right)|}\)
+        &   \(F_Y(y) = F_x(g^{-1}(y))\)
+        \\
+
+        descrescente
+        &  \(f_Y(y) = \frac{f_x\left(g^{-1}\left(y\right)\right)}{|g'\left(g^{-1}\left(y\right)\right)|}\)
+        &   \(F_Y(y) = 1- F_x(g^{-1}(y))\)
+        \\
+    \end{tblr}
+\end{figure}
+
+\textbf{Matrice di covarianza \(\mathbf{K_x}\):} 
+\(\mathbf{\overline{\overline{K}}_x} \vcentcolon =E\left[\left(\overline{X}-\overline{\mu}_x\right){\left(\overline{X}-\overline{\mu}_x\right)}^T\right] =
+    \begin{pmatrix}
+        \sigma^2_1 & \sigma_1\sigma_2\rho_{1,2} \\
+        \sigma_1\sigma_2\rho_{1,2} & \sigma^2_2
+    \end{pmatrix}\)
+    
+\textbf{Proprietà della Matrice di covarianza \(\mathbf{K_x}\)}
+\\\(\lvert\mathbf{K_x}\rvert = \sigma^2_1\sigma^2_2\left(1-\rho^2_{1,2}\right) \geq 0\) 
+\\\(\rho_{1,2} \neq \pm 1 \implies \mathbf{K^{-1}_x} = \frac{1}{\sigma^2_1\sigma^2_2\left(1-\rho^2_{1,2}\right)}\begin{pmatrix}
+        \sigma^2_2 & -\sigma_1\sigma_2\rho_{1,2} \\
+        -\sigma_1\sigma_2\rho_{1,2} & \sigma^2_1
+    \end{pmatrix}\)
+\\\(z = {\left[z_1,z_2\right]}^T \in \mathbb{R}^{2\times 1}\implies \overline{z}^T\overline{\overline{K^{-1}_x}}\overline{z}\geq 0\)
+\\\scalebox{0.94}{
+\(f_X(\mathbf{x}) = \frac{1}{2\pi|\mathbf{K}_X|^{1/2}} \exp\left[-\frac{1}{2}{(\mathbf{x} - \boldsymbol{\mu}_X)}^T \mathbf{K}_X^{-1}(\mathbf{x} - \boldsymbol{\mu}_X)\right] = f_{X_1,X_2}(x_1, x_2) =
+\frac{1}{2\pi\sqrt{\sigma_1^2\sigma_2^2(1-\rho_{1,2}^2)}} \exp\left[-\frac{\sigma_2^2{(x_1-\mu_1)}^2 + \sigma_1^2{(x_2-\mu_2)}^2 - 2\rho_{1,2}(x_1-\mu_1)(x_2-\mu_2)}{2\sigma_1^2\sigma_2^2(1-\rho_{1,2}^2)}\right]\)
+}
+
+\vspace{-0.2cm}
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, colspec = {X[l,0.4]X[l]},
+        cell{1-8}{1} = {white!80!black} % chktex 8 %
+	}
+	\textbf{Derivata del Prodotto} 
+    & \(\frac{d}{dx}f(x)\cdot g(x) = f'(x)\cdot g(x) + f(x)\cdot g'(x)\)
+    \\
+    
+    \textbf{Derivata del Rapporto}
+    & \(\frac{d}{dx}\frac{f(x)}{g(x)} = \frac{f'(x)\cdot g(x)-f(x)\cdot g'(x)}{[g{(x)}^2]}\)
+    \\
+    
+    \textbf{Regola della catena}
+    & \(\frac{d}{dx}f[g(x)] = f'[g(x)]\cdot g'(x)\)
+    \\
+
+    \textbf{Integrazione generale}
+    & \(\int f\left[g\left(x\right)\right]\cdot g'\left(x\right) dx = F\left[g\left(x\right)\right] + c\)
+    \\
+
+    \textbf{Integrazione per parti}
+    & \(\int f\left(x\right)\cdot g\left(x\right) dx = F\left(x\right)g\left(x\right) - \int F\left(x\right)\cdot g'\left(x\right) dx\) 
+    \\
+
+    \textbf{Funzione Gamma} \(\Gamma\)
+    & \(\int_{0}^{+\infty}t^{x-1}e^{-at}dt = a^{-x}\Gamma\left({x}\right)\)\qquad
+    \(\Gamma\left({x}\right) := \int_{0}^{+\infty}t^{x-1}e^{-t}dt\)\qquad
+    \(\Gamma\left(n\right) = (n-1)!, n \in \mathbb{N}\)
+    \\
+
+    \textbf{Sommatoria primi n numeri}
+    & \(\sum_{i=1}^{n} i = \frac{n(n+1)}{2}\) \qquad \(\sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}\) \qquad \(\sum_{i=1}^n i^3 = {\left(\frac{n(n+1)}{2}\right)}^2\)
+
+    \\
+
+    \textbf{Serie geometrica}
+    & \(\sum_{i \in \mathbb{N}_0} p^i = \frac{1}{1-p}, p<1\) \qquad \(\sum_{i=0}^{n-1} p^i = \frac{1-p^n}{1-p}\) \qquad \(0\leq p < 1, \sum_{n=1}^{+\infty} np^{n-1} = \frac{1}{{\left(1-p\right)}^2} \sum_{n=1}^\infty n^2q^{n-1} = \frac{1}{{(1-q)}^2} + \frac{2q}{{(1-q)}^3}\)
+
+    \\
+\end{tblr}
+\end{figure}
+\vspace{-0.9cm}
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-3} = {white!80!black}, colspec = {X[l, 1]X[l, 0.7]X[l, 0.5]}, % chktex 8 %
+	}
+    \textbf{Funzione} & \textbf{Derivata} & \textbf{Integrale} \\
+     \(x^n\) & \(nx^{n-1}\) & \(\frac{x^{n+1}}{n+1}+c, n\neq -1\)
+     \\
+
+    \(\frac{1}{x}\) & \(-x^{-2}\) & \(\ln({\lvert x\rvert}) + c\)
+    \\
+
+    \(e^x\) & \(e^x\) & \(e^x+c\)
+    \\
+
+    \(a^x\) & \(a^x\ln(a)\) & \(a^x\log_a(e)+c\)
+    \\
+
+    \(\cos(x)\) & \(-\sin(x)\) & \(\sin(x)+c\)
+    \\
+
+    \(\sin(x)\) & \(\cos(x)\) & \(-\cos(x)+c\)
+    \\
+
+    \(\frac{1}{1+x^2}\) & \(-\frac{2x}{{(1-x^2)}^2}\) & \(\arctan(x) + c\)
+    \\
+\end{tblr}
+\end{figure}
+
+\vspace{-1.105cm}
+\begin{center}
+    \begin{figure}[H]
+        \begin{subfigure}{0.48\textwidth}
+            \begin{tikzpicture}
+                \begin{axis}[
+                    xmin=-5, xmax=5,              % Intervallo asse x
+                    ymin=0, ymax=1,             % Intervallo asse y
+                    xtick={-5,-4,...,5},          % Tacche asse x
+                    ytick={-5,-4,...,15},         % Tacche asse y
+                    ticklabel style={font=\tiny},
+                    legend pos=north west       % Posizione della legenda
+                ]
+                
+                % Traccia la funzione principale
+                \addplot[
+                    domain=0:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                       % Interpolazione smooth
+                ] {(\funzioneA)};
+                \addlegendentry{$\mathcal{E}(1)$}
+
+                \addplot[
+                    domain=0:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dashed,
+                ] {(\cdfA)};
+                \addlegendentry{$F(x)$}
+            \end{axis}
+            \end{tikzpicture}
+        \end{subfigure}
+        \hfill % Spazio orizzontale tra i grafici
+        \begin{subfigure}{0.48\textwidth}
+            \begin{tikzpicture}
+                \begin{axis}[
+                    xmin=-5, xmax=5,              % Intervallo asse x
+                    ymin=0, ymax=1,             % Intervallo asse y
+                    xtick={-5,-4,...,5},          % Tacche asse x
+                    ytick={-5,-4,...,15},         % Tacche asse y
+                    ticklabel style={font=\tiny},
+                    legend pos=north west        % Posizione della legenda
+                ]
+                
+                % Traccia la seconda funzione
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                       % Interpolazione smooth
+                ] {(\funzioneB)};
+                \addlegendentry{$\mathcal{L}(1)$}
+
+                \addplot[
+                    domain=-5:0,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dashed,
+                ] {(\cdfBN)};
+                \addlegendentry{$F(x)$}
+
+                \addplot[
+                    domain=0:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dashed,
+                ] {(\cdfBP)};
+                \end{axis}
+            \end{tikzpicture}
+        \end{subfigure}
+    \end{figure}
+\end{center}
+
+\vspace{-1.5cm}
+\begin{center}
+    \begin{figure}[H]
+        \begin{subfigure}{0.48\textwidth}
+            \begin{tikzpicture}
+                \begin{axis}[
+                    xmin=-5, xmax=5,              % Intervallo asse x
+                    ymin=0, ymax=1,             % Intervallo asse y
+                    xtick={-5,-4,...,5},          % Tacche asse x
+                    ytick={-5,-4,...,15},         % Tacche asse y
+                    ticklabel style={font=\tiny},
+                    legend pos=north west        % Posizione della legenda
+                ]
+                
+                % Traccia la funzione principale
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                       % Interpolazione smooth
+                ] {(\funzioneC)};
+                \addlegendentry{$\mathcal{C}(0,1)$}
+
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dashed,
+                ] {(\cdfC)};
+                \addlegendentry{$F(x)$}
+                \end{axis}
+            \end{tikzpicture}
+        \end{subfigure}
+        \hfill % Spazio orizzontale tra i grafici
+        \begin{subfigure}{0.48\textwidth}
+            \begin{tikzpicture}
+                \begin{axis}[
+                    %title={Grafico di $g(x) = \funzioneB$},
+                    xmin=-5, xmax=5,              % Intervallo asse x
+                    ymin=0, ymax=1,          % Intervallo asse y
+                    xtick={-5,-4,...,5},          % Tacche asse x
+                    ytick={-1.5,-1.0,...,1.5},    % Tacche asse y
+                    ticklabel style={font=\tiny},
+                    legend pos=north west,        % Posizione della legenda
+                ]
+                
+                % Traccia la seconda funzione
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    color=black,                    % Colore rosso
+                    ultra thick,                  % Spessore della linea
+                    smooth,                       % Interpolazione smooth
+                ] {(\funzioneG)};
+                \addlegendentry{$\mathcal{N}(0,1)$}
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dashed,
+                ] {(\cdfG)};
+                \addlegendentry{$F(x)$}
+                \addplot[
+                    domain=-5:5,                  % Dominio
+                    black,                    
+                    ultra thick,                  % Spessore della linea
+                    smooth,                        % Interpolazione smooth
+                    dotted,
+                ] {(\Q)};
+                \addlegendentry{$Q(x)$}
+                \end{axis}
+            \end{tikzpicture}
+        \end{subfigure}
+    \end{figure}
+\end{center}
+
+
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, colspec = {X[l,0.4]X[l]},
+        cell{1-30}{1} = {white!80!black} % chktex 8 %
+	}
+    
+	\textbf{Definizione informazione} 
+    & \(i\left(A\right) = \log\left(\frac{1}{\mathbb{P}\left(A\right)}\right) = -\log\left(\mathbb{P}\left(A\right)\right)\)
+    \\
+    \textbf{Definizione entropia}
+    & \(H\left(X\right) = \mathbb{E}[i\left(X\right)] = \sum_{x \in \mathcal{X}}p_X\left(x\right)\log\left(\frac{1}{p_X\left(x\right)}\right)\)
+    \\
+
+    \textbf{Entropia Bernoulli}
+    & \(H\left(p\right) = H_2\left(p\right) = H\left(p,1-p\right) = p\log\left(\frac{1}{p}\right) + \left(1-p\right)\log\left(\frac{1}{1-p}\right) = - p\log\left(p\right) - \left(1-p\right)\log\left(1-p\right)\) \qquad \(\frac{d}{d p} H\left(p\right) = \log\left(\frac{1-p}{p}\right)\)
+    \\
+
+    \textbf{Entropia uniforme discreta}
+    & \(H\left(X\right) = \log\left(|\mathcal{X}|\right), \mathcal{X}\) uniforme discreta
+    \\
+
+    \textbf{Disuguaglianza di Jensen}
+    & {\(g\left(x\right)\) differenziabile nei punti dell'alfabeto \(\mathcal{X}\) e\text{ convessa} \(\Rightarrow \mathbb{E}[g\left(X\right)]\geq g\left(\mathbb{E}[X]\right)\),\\
+    \(g\left(x\right)\) differenziabile nei punti dell'alfabeto \(\mathcal{X}\) e concava \(\Rightarrow \mathbb{E}[g\left(X\right)]\leq g\left(\mathbb{E}[X]\right)\) 
+    }
+    \\
+    
+    \textbf{Limite superiore Entropia}
+    & \(H\left(X\right) \leq \log\left(|\mathcal{X}|\right)\)
+    \\
+
+    \textbf{Divergenza KL (Kullback-Leibler)}
+    & { \(p\left(x\right), q\left(x\right)\) pmf su \(\mathcal{X}\), \(D\left(p|| q\right) = \sum_{x\in \mathcal{X}}p\left(x\right)\log\left(\frac{p\left(x\right)}{q\left(x\right)}\right) = \mathbb{E}_{p(x)}\left[\log\left(\frac{p\left(x\right)}{q\left(x\right)}\right)\right]\),\\
+    \(D\left(p||q\right) \geq 0\) \(\qquad \forall p,q, D\left(p||q\right) = 0 \iff p = q\)
+    }
+    \\
+    
+    \textbf{Disuguaglianza di Kraft}
+    &\(\sum_{x\in\mathcal{X}} 2^{-l\left(x\right)}\leq 1 \iff \) il codice è a prefisso, \(l\left(x\right) \) lunghezza codice associato a \(x\)
+    \\
+    
+    \textbf{Lunghezza di Shannon} 
+    & \(l\left(x\right) = \left\lceil\log\left(\frac{1}{p_X\left(x_i\right)}\right)\right\rceil\), esiste almeno un codice istantaneo con le lunghezze di Shannon. Inoltre \(H\left(X\right) \leq L = \mathbb{E}_X[l\left(X\right)]\)
+    \\
+
+    \textbf{Entropia coppie variabili}
+    & {\(H\left(X,Y\right) = H\left(X\right) + H\left(Y|X\right) = H\left(Y\right) + H\left(X|Y\right)\), \(0\leq H\left(X|Y\right) \leq H\left(X\right), \forall Y\), con \(H\left(X|Y\right) = H\left(X\right) \iff X, Y\) indipendenti e \(H\left(X|Y\right) = 0 \iff X = g\left(Y\right)\)  } 
+    \\
+
+    \textbf{Probabilità totale Entropia}
+    & {\(H\left(X|Y\right) = \sum_{y\in\mathcal{Y}} \mathbb{P}\left(Y=y\right)H\left(X|Y=y\right)\)  }
+    \\
+
+    \textbf{Mutua informazione}
+    & \(I\left(X;Y\right) =H\left(X\right) -  H\left(X|Y\right) = H\left(Y\right) - H\left(Y|X\right) = \mathbb{E}\left[\frac{p_{X,Y}\left(x,y\right)}{p_X\left(x\right)p_Y\left(y\right)}\right] = D\left(p_{X,Y}\left(x,y\right) || p_X\left(x\right)p_y\left(y\right)\right), \qquad I\left(X;Y\right)=0\iff p_{X,Y}\left(x,y\right)=p_X\left(x\right)p_Y\left(y\right)\)
+    \\
+    
+    \textbf{Entropia vettore aleatorio}
+    & \(H\left(X^n\right) = H\left(X_1, \ldots, X_n\right) = H\left(X_1\right) + H\left(X_2|X_1\right) + \ldots + H\left(X_n | X_{n-1}, X_{n-2}, \ldots, X_1\right)\)
+    \\
+
+    \textbf{Tasso entropico}
+    & \(H_{\infty}\left(X\right) = \underset{n \to \infty}{\lim}\frac{H\left(\overline{\mathbf{X}}^n\right)}{n} = \underset{n \to \infty}{\lim} H\left(X_n | X_{n-1}, X_{n-2}, \ldots, X_1\right)\)
+    \\
+    
+    \textbf{Sorgenti Markoviane}
+    & \( p_{X\left(n\right)|X\left(n-1\right), \ldots, X\left(1\right)}\left(x_n|x_{n-1}, \ldots, x_1\right) =p_{X\left(n\right)|X\left(n-1\right)}\left(x_n|x_{n-1}\right) \)
+    \\
+
+    \textbf{Matrice di transizione}
+    & dato \(\mathcal{X} = \{1,\ldots, m\}, \overline{\overline{P}} \in \mathcal{M}_{m\times m}\) tale che \( \forall i,j \in \mathcal{X}:p_{i\to j} \) è la probabilità di andare dallo stato \(i\) allo stato \(j\)
+    \\
+
+    \textbf{Vettore di probabilità degli stati a tempo n}
+    & \(\overline{x}\left(n_o+n\right) = \left(p_{X\left(n_0+n\right)}\left(1\right), \ldots, p_{X\left(n_0+n\right)}\left(m\right)\right) = {\left(\overline{\overline{P^T}}\right)}^{n}\overline{x}\left(n_0\right)\)
+    \\
+
+    \textbf{Condizione di stazionarità}
+    & \(\overline{x}\) è distribuzione stazionaria (indipendente da \(n\)) \(\iff \overline{\overline{P^T}}\overline{x} = \overline{x}\)
+    \\
+
+    \textbf{Distribuzione stazionaria grafo NON orientato}
+    & \(\overline{x} = \left(\frac{w_1}{2w}, \ldots, \frac{w_m}{2w}\right), w_i = \) somma pesi archi uscenti da \(S_i\) e \(w\) somma pesi tutti gli archi.
+    \\
+
+    \textbf{Tasso entropico Markov}
+    & \(H_\infty\left(X\right) = \sum_{i=1}^m\overline{x}_i\sum_{j=1}^m p_{i \to j}\log\left(\frac{1}{p_{i \to j}}\right) = \sum_{i=1}^m\overline{x}_i H\left(S_i\right), \) dove \(H\left(S_i\right)\) è l'incertezza di uscire dallo stato \(i\)
+    \\
+\end{tblr}
+\end{figure}
+\vspace{-0.9cm}
+
+
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-3} = {white!80!black}, colspec = {X[l, 0.2]X[l, 0.7]X[l, 1.1]}, % chktex 8 %
+	}
+    \textbf{Tipo inferenza} & \textbf{Cose note} & \textbf{Regola decisione/Stimatore} \\
+     Decisione Bayesiana
+     & \({\{H_i\}}_{i=1}^M\) disgiunte\newline\(\forall i \in \{1, \ldots,  M\}: \mathbb{P}\{H_i\}\)\newline\(\forall i \in \{1, \ldots,  M\}:\mathbb{P}\{X^n=x^n|H_i\}\)\newline\(\overline{\overline{C}} \in \mathcal{M}_{m\times m}: c_{i,j} \) costo se decido \(i\) ma è vera l'ipotesi \(H_j\)
+     & \(\mathcal{R}=\sum_{i=1}^M \sum_{j=1}^M C_{i,j}\mathbb{P}\left\{D\left(X^n\right)=i, H = H_j\right\}\)
+     \(D(x^n)=i \iff \mathbb{P}\{X^n=x^n,H_i\}> \mathbb{P}\{X^n=x^n,H_j\} \forall j \neq i\)\newline\(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_2\}} \underset{H_2}{\overset{H_1}{\gtrless}} \frac{\mathbb{P}\{H_2\}}{\mathbb{P}\{H_1\}}\) con 2 ipotesi
+     \\
+
+     Decisione non Bayesiana (Neyman-Pearson)
+     & {\(H_0\) stato normale, \(H_1 = \overline{H_0}\) stato alterato\newline\(\forall i \in \{0,1\}:\mathbb{P}\{X^n=x^n|H_i\}\)\\
+     Errore di tipo I:\@ \(P\left\{D\left(X^n\right)=1|H_0\right\} \) \\
+     Potenza del test:\@ \(P\left\{D\left(X^n\right)=1|H_1\right\} \)
+     }
+     & \(L(x^n) = \frac{\mathbb{P}\{X^n=x^n|H_1\}}{\mathbb{P}\{X^n=x^n|H_0\}} \underset{H_0}{\overset{H_1}{\gtrless}} \eta\)\newline\(\alpha = \mathbb{P}\{L(x^n) > \eta | H_0\}\)\newline\(1-\beta = \mathbb{P}\{L(x^n) > \eta | H_1\}\)
+     \\
+
+     Stima Bayesiana parametro continuo
+     & {\(f_{\Theta|X^n}(\theta|x^n) = \frac{f_\Theta(\theta)p_{X^n|\Theta}(x^n|\theta)}{p_{X^n}(x^n)}\)\newline \(p_{X^n}(x^n) = \int f_{\Theta}(\theta)p_{X^n|\Theta}(x^n|\theta)d\theta\)\\
+     \(\mathcal{R}=E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\right]=E_{x^n}\left[E\left[C\left(\hat{\Theta}\left(X^n\right)-\Theta\right)\middle|X^n\right]\right]\)
+     } 
+     & \(\hat{\theta}_{opt}(x^n) = \arg\min\int C(\hat{\theta}(x^n)-\theta)f_{\Theta|X^n}(\theta|x^n)d\theta\)\newline\(C(x) = x^2 \Rightarrow \hat{\theta}_{mmse}(x^n) = \int \theta f_{\Theta|X^n}(\theta|x^n)d\theta=\mathbb{E}[\Theta|X^n = x^n]\)\newline\(C(x) = \Pi(\frac{x}{\epsilon}) = \begin{cases}
+         1, &|x|<\frac{\epsilon}{2}\\
+         0, & else
+     \end{cases} \Rightarrow \hat{\theta}_{map}(x^n)=\arg\max f_{\Theta|X^n}(\theta|x^n)\)
+     \\
+
+     Stima non Bayesiana
+     & \(f_{X^n}(x^n;\theta)\)
+     & \(\hat{\theta}_{ML}(x^n) = \arg\max \log\left(f_{X^n}(x^n;\theta)\right)\)
+     \\
+\end{tblr}
+\end{figure}
+\textbf{NOTA:} APPLICARE IL LOGARITMO NATURALE NON CAMBIA IL VERSO DELLA DISEQUAZIONE, FORTEMENTE CONSIGLIATI IN TUTTI GLI STIMATORI.\@
+\begin{figure}[H]
+\begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, colspec = {X[l,0.4]X[l]},
+        cell{1-30}{1} = {white!80!black} % chktex 8 %
+	}
+	\textbf{Bias/unbias} 
+    & \(\hat{\Theta}\) unbiased/corretto \(\iff \mathbb{E}[\hat{\Theta}(X^n)|\Theta = \theta] = \theta\)
+    \\
+    
+    \textbf{unbias/correto asintotico} 
+    & \(\hat{\Theta}\) unbiased/corretto asintoticamente \(\iff \underset{n\to\infty}{\lim}(\mathbb{E}[\hat{\Theta}(X^n)|\Theta = \theta]) = \theta\) 
+    \\
+    
+    \textbf{Consistenza in probabilità}
+    & \(\underset{n\to\infty}{\lim}\mathbb{P}\left\{\left|\hat{\Theta}\left(X^n\right)-\Theta\right|> \epsilon \right\}=0,\,\forall\epsilon>0\)
+    \\
+
+    \textbf{Consistenza in media quadratica} 
+    & \(\hat{\Theta}\) consistente in media quadratica \(\iff \underset{n\to\infty}{\lim}(\overline{e}^2) = 0\), \(\overline{e}^2 =  \mathbb{E}[{(\hat{\Theta}(X^n)-\Theta)}^2]\)\newline se \(\hat{\Theta}\) è unbiased \(\overline{e}^2 = Var(\hat{\Theta}(X^n))\) 
+    \\
+
+    \textbf{Informazione di Fisher} 
+    & \(I_n=\mathbb{E}[{(\frac{d \log\left(f_{X^n}(x^n;\theta)\right)}{d\theta} )}^2] = -\mathbb{E}[\frac{d^2 \log\left(f_{X^n}(x^n;\theta)\right)}{d^2\theta}] \) 
+    \\
+
+    \textbf{Limite CR}
+    & \(Var[\hat{\Theta}(X^n)] \geq \frac{1}{I_n(\theta)}\) con \(\hat{\Theta}(X^n)\) efficiente se vale '\(=\)'
+\end{tblr}
+\end{figure}
+
+\textbf{NOTA:} Se in uno stimatore vale che:
+\begin{itemize}
+    \item \(C(\cdot)\geq 0\)  e convessa (\(\cup\))
+    \item \(f_{\Theta|X^n}(\theta|x^n)\) è simmetrica rispetto a \(\E[\Theta|X^n = x^n]\)
+    \item \(f_{X^n}(x^n;\theta)\) è unimodale
+\end{itemize}
+
+Allora tutti gli stimatori che ottimizzano \(C(\cdot)\) coincidono con \(\E[\Theta|X^n]\) e, quindi equivalenti a \(\hat{\Theta}_{mmse}(X^n) = \hat{\Theta}_{map}(X^n)\).
+
+\textbf{NOTA:}
+\begin{itemize}
+    \item Convessa = \(\cup\)
+    \item Concava = \(\cap\)
+\end{itemize}
+
+\begin{figure}[H]
+    \begin{tblr}{
+		hlines = {0.9pt}, vlines = {0.9pt}, cell{1}{1-4} = {white!80!black}, colspec = {X[l, 0.25]X[l, 0.37]X[l, 0.6]X[l, 0.15]}, % chktex 8 %
+	}
+        \textbf{Nome} & \textbf{Entropia} \(\mathbf{H}\) & {\textbf{Stimatori/Likelihood}\\dato \(X^n\) con \(n\) realizzazioni \((x_i)\) iid} & \textbf{Inform. Fisher} \(\mathbf{I_n}\)
+        \\
+
+        {Uniforme discreta\hspace{0.5cm}\(\mathcal{X} = \left\{1,\dots, m\right\} \)}
+        & \(H = \ln\left(\lvert\mathcal{X}\rvert\right) = \ln\left(m\right)\)
+        & {Stimare il parametro \(m\implies\)\\
+            \(\hat{m}= \max\{x_1,\dots,x_n\}\)}
+        &
+        \\
+
+        {Uniforme continua\hspace{0.5cm}\(X \sim \mathcal{U}\left(a,b\right)\)\hspace{0.5cm}\(\mathcal{X} = \left[a,b\right] \)}
+        & \(H=\log\left(b-a\right)\)
+        & {Stimare il parametro \(a\) o \(b\implies\)
+            \(\hat{a}=\min\{x_1,\dots,x_n\}\)\\
+            \(\hat{b}=\max\{x_1,\dots,x_n\}\)\\
+        }
+        &
+        \\
+
+        {Bernoulli\hspace{0.5cm}\(\mathcal{X} = \{0,1\}\)}
+        & \(H = -\log(1-p) + p\log\left(\frac{1-p}{p}\right)\)
+        & {Stimare il parametro \(p\implies\)\\
+            \(\Lambda\left(p\right)=\log\left(p\right)\sum_{i=1}^n x_i + \log\left(1-p\right)\sum_{i=1}^n\left(1-x_i\right)\) 
+            }
+        & \(I_n=\frac{1}{p\left(1-p\right)}\)
+        \\
+
+        {Binomiale\hspace{0.5cm}\(X \sim \mathcal{B}(n,p)\)\hspace{0.5cm}\(\mathcal{X} = \{0,1,\dots,n\}\)}
+        &
+        & {Stimare il parametro \(p\implies\)
+            \(\Lambda(p)=\sum_{i=1}^m\log\binom{n}{x_i}+\log(p)\sum_{i=1}^m x_i+\log(1-p)\sum_{i=1}^m(n-x_i)\)}
+        & \(I_n=\frac{n}{p\left(1-p\right)}\)
+        \\
+
+        {Geometrica\hspace{0.5cm}\(X \sim \mathcal{G}(p)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}\)}
+        & \(H=-\log\left(p\right)-\frac{1-p}{p}\log\left(1-p\right)\)
+        & Stimare il parametro \(p\implies\)
+            \(\Lambda(p)=n\log\left(p\right)+\log\left(1-p\right)\sum_{i=1}^n\left(x_i-1\right)\)
+        & \(I_n=\frac{1}{p^2\left(1-p\right)}\)
+        \\
+
+        {Poisson\hspace{0.5cm}\(X \sim \mathcal{P}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{N}_0\)}
+        & 
+        & Stimare il parametro \(\lambda\implies\)
+            \(\Lambda(\lambda) =\ln(\lambda)\sum_{i=1}^n x_i-n\lambda-\sum_{i=1}^n\ln(x_i!)\)
+        & \(I_n=\frac{1}{\lambda}\)
+        \\
+
+        {Esponenziale\hspace{0.5cm}\(X \sim \mathcal{E}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}^+_0\) } 
+        & \(H=1-\ln\left(\lambda\right)\)
+        & Stimare il parametro \(\lambda\implies\)
+            \(\Lambda(\lambda) =n\ln(\lambda)-\lambda\sum_{i=1}^n x_i\)
+        & \(I_n=\frac{1}{\lambda^2}\)
+        \\
+
+        {Laplaciana\hspace{0.5cm}\(X \sim \mathcal{L}(\lambda)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
+        & \(H=1+\ln\left(\frac{2}{\lambda}\right)\)
+        & Stimare il parametro \(\lambda\implies\) 
+            \(\Lambda(\lambda)=n\ln(\lambda)-n\ln(2)-\lambda\sum_{i=1}^n\lvert x_i\rvert\)
+        & \(I_n=\frac{1}{\lambda^2}\)
+        \\
+
+        {Cauchy\hspace{0.3cm}\(X \sim \mathcal{C}\left(a,b\right)\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}\)}
+        & \(H=\log\left(4\pi b\right)\)
+        & {Stimare i parametri \(a\) e \(b\implies\)\\
+            \(\Lambda(a; b) =-n\log(b\pi)-\sum_{i=1}^{n}\log\left(1+{\left(\frac{x_i-a}{b}\right)}^2\right)\)}
+        & \(I_n=\frac{1}{2b^2}\)
+        \\
+
+        {Rayleigh\hspace{0.3cm}\(X\sim\mathcal{R\left(\beta\right)}\)\hspace{0.5cm}\(\mathcal{X} = \mathbb{R}_0^+\)}
+        & {\(H= 1+\ln\left(\frac{\beta}{\sqrt{2}}\right)+\frac{\gamma}{2}\)\\
+            \(\gamma\approx0.5772\dots\)
+        }
+        & Stimare il parametro \(\beta\implies\)
+            \(\Lambda(\beta)=-2n\ln(\beta)+\sum_{i=1}^n\ln(x_i)-\frac{1}{2\beta^2}\sum_{i=1}^n x_i^2\)
+        & \(I_n=\frac{2}{\beta^2}\)
+        \\
+
+        {Gaussiana\hspace{0.5cm}\(X \sim \mathcal{N}(\mu_X, \sigma_X^2)\)}
+        & \(H=\frac{1}{2}\left(1 +\ln\left(2\sigma^2_X\pi\right)\right)\)
+        & {Stimare i parametri \(\mu_X\) e \(\sigma_X^2\implies\)
+        \(\Lambda(\mu_X;\sigma_X^2)=-\frac{n}{2}\ln\left(2\pi\sigma_X^2\right)-\frac{1}{2\sigma_X^2}\sum_{i=1}^n{\left(x_i - \mu_X\right)}^2\)
+        }
+        & {\(I^{\mu_X}_n=\frac{1}{\sigma_X^2}\)\\
+        \(I^{\sigma_X^2}_n=\frac{1}{2\sigma_X^2}\)
+        }
+        \\
+    \end{tblr}
+\end{figure}
+
+\end{document}
